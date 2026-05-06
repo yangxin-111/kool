@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《诱饵入局》— 都市言情小说 · 双端阅读</title>
+    <style>
+        :root {
+            --bg: #f5f0e8;
+            --paper: #fdfaf3;
+            --text: #3e3232;
+            --text-secondary: #5c4b4b;
+            --accent: #5c4a3a;
+            --accent-light: #7d6652;
+            --border: #d4c5b2;
+            --shadow: rgba(62, 50, 50, 0.08);
+            --sidebar-bg: #ede4d8;
+            --sidebar-hover: #e0d5c5;
+            --active-chapter: #d4c5b2;
+            --divider: #c4b5a0;
+            --btn-bg: #ede4d8;
+            --btn-hover: #d4c5b2;
+            --tag-bg: #f0e4d0;
+            --tag-text: #6b4f3c;
+            --overlay-bg: rgba(30, 20, 15, 0.65);
+            --transition-speed: 0.35s;
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1514;
+            --paper: #231e1c;
+            --text: #d4c8c0;
+            --text-secondary: #b0a59c;
+            --accent: #c8946e;
+            --accent-light: #d4a882;
+            --border: #3a3230;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --sidebar-bg: #1e1917;
+            --sidebar-hover: #2a2422;
+            --active-chapter: #3a302c;
+            --divider: #4a403c;
+            --btn-bg: #2a2422;
+            --btn-hover: #3a302c;
+            --tag-bg: #332820;
+            --tag-text: #c8946e;
+            --overlay-bg: rgba(0, 0, 0, 0.75);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Noto Serif SC", "Source Han Serif CN", "STSong", "Songti SC", "SimSun", "KaiTi", "楷体", Georgia, serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background var(--transition-speed), color var(--transition-speed);
+            line-height: 1.9;
+            letter-spacing: 0.02em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* 封面页 */
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 40px 20px;
+            background: var(--paper);
+            transition: background var(--transition-speed);
+        }
+
+        .home-book-cover {
+            max-width: 340px;
+            width: 78%;
+            aspect-ratio: 3/4;
+            background: linear-gradient(160deg, #2c2c3a 0%, #1a1a28 40%, #1e2a2e 100%);
+            border: 6px solid var(--border);
+            box-shadow: 0 20px 40px var(--shadow), 0 0 0 2px rgba(92, 74, 58, 0.2), inset 0 0 80px rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 18px;
+            margin-bottom: 2.5rem;
+            color: #d4c5b8;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .home-book-cover::before {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            z-index: 2;
+        }
+
+        .home-book-cover .cover-icon {
+            font-size: 2.8rem;
+            margin-bottom: 16px;
+            z-index: 3;
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+            opacity: 0.9;
+        }
+
+        .home-book-cover .cover-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            margin-bottom: 18px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+            z-index: 3;
+            line-height: 1.3;
+        }
+
+        .home-book-cover .cover-author {
+            font-size: 0.95rem;
+            letter-spacing: 0.2em;
+            opacity: 0.8;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            z-index: 3;
+        }
+
+        .home-book-cover .cover-press {
+            position: absolute;
+            bottom: 16px;
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            opacity: 0.55;
+            z-index: 3;
+        }
+
+        .home-book-cover .cover-sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #c8b89a;
+            border-radius: 50%;
+            z-index: 4;
+            opacity: 0.7;
+            animation: sparkle 3s ease-in-out infinite;
+        }
+        .home-book-cover .cover-sparkle:nth-child(1) { top: 18%; left: 25%; }
+        .home-book-cover .cover-sparkle:nth-child(2) { top: 22%; right: 28%; animation-delay: 1s; }
+        .home-book-cover .cover-sparkle:nth-child(3) { bottom: 30%; left: 30%; animation-delay: 2s; }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.6); }
+        }
+
+        .home-intro {
+            max-width: 480px;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.9;
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+        }
+        .home-intro strong { color: var(--accent); font-weight: 700; }
+        .home-intro .divider-dot { display: block; margin: 12px auto; color: var(--divider); font-size: 0.7rem; }
+
+        .home-buttons {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .home-btn {
+            padding: 13px 36px;
+            font-size: 1rem;
+            font-family: inherit;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            letter-spacing: 0.07em;
+            font-weight: 600;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .home-btn.primary { background: var(--accent); color: #fff; box-shadow: 0 5px 18px rgba(92, 74, 58, 0.3); }
+        .home-btn.primary:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(92, 74, 58, 0.4); }
+        .home-btn.secondary { background: var(--btn-bg); color: var(--text); border: 1px solid var(--border); }
+        .home-btn.secondary:hover { background: var(--btn-hover); border-color: var(--accent-light); }
+        .home-btn:active { transform: scale(0.96); }
+
+        /* 阅读器顶部栏 */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 110;
+            width: 100%;
+            background: var(--paper);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 2px 10px var(--shadow);
+            transition: all var(--transition-speed);
+        }
+
+        .top-bar .brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+        .top-bar .brand span { font-size: 0.8rem; font-weight: 400; color: var(--text-secondary); }
+
+        .top-bar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 7px 14px;
+            border-radius: 22px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: inherit;
+            letter-spacing: 0.03em;
+            transition: all 0.25s;
+            white-space: nowrap;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn:hover { background: var(--btn-hover); border-color: var(--accent-light); }
+        .btn:active { transform: scale(0.95); }
+
+        .btn.icon-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            justify-content: center;
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        .font-size-group { display: flex; align-items: center; gap: 2px; }
+        .font-size-group .btn {
+            width: 34px; height: 34px; padding: 0;
+            font-weight: bold; border-radius: 50%; font-size: 0.9rem;
+        }
+        .font-size-label { font-size: 0.78rem; color: var(--text-secondary); min-width: 38px; text-align: center; }
+
+        /* 侧边栏遮罩 */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--overlay-bg);
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .sidebar-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 主布局 */
+        .main-container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            flex: 1;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 270px;
+            min-width: 270px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 210;
+        }
+
+        .sidebar-section-title {
+            padding: 14px 18px 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+        .sidebar-section-title:first-child { padding-top: 4px; }
+        .sidebar-divider { margin: 6px 16px 10px; border: none; border-top: 1px dashed var(--divider); }
+
+        .chapter-list { list-style: none; flex: 1; }
+        .chapter-list li {
+            padding: 10px 16px;
+            margin: 1px 0;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            transition: all 0.2s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .chapter-list li:hover { background: var(--sidebar-hover); color: var(--text); border-left-color: var(--accent-light); }
+        .chapter-list li.active { background: var(--active-chapter); color: var(--accent); font-weight: 700; border-left-color: var(--accent); }
+        .chapter-list li .ch-num {
+            background: var(--accent); color: #fff;
+            width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+        }
+        .chapter-list li.coming-soon { opacity: 0.5; cursor: not-allowed; font-style: italic; }
+        .chapter-list li.coming-soon:hover { background: transparent; border-left-color: transparent; color: var(--text-secondary); }
+        .chapter-list li.coming-soon .ch-num { background: var(--text-secondary); opacity: 0.6; }
+        .chapter-list li .badge-new {
+            font-size: 0.6rem; background: #c0392b; color: #fff;
+            padding: 2px 7px; border-radius: 10px; letter-spacing: 0.04em;
+            font-weight: 600; animation: pulse-badge 2s ease-in-out infinite;
+        }
+        @keyframes pulse-badge { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .content-area {
+            flex: 1;
+            padding: 36px 48px;
+            max-width: 880px;
+            margin: 0 auto;
+            background: var(--paper);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.03);
+            min-height: calc(100vh - 120px);
+            transition: all var(--transition-speed);
+        }
+        .chapter-title { font-size: 2.1rem; font-weight: 700; color: var(--accent); text-align: center; margin-bottom: 6px; }
+        .chapter-subtitle { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 32px; font-style: italic; }
+        .chapter-badge {
+            display: inline-block; background: var(--tag-bg); color: var(--tag-text);
+            font-size: 0.7rem; padding: 3px 10px; border-radius: 12px;
+            letter-spacing: 0.05em; font-weight: 600; margin-bottom: 6px; user-select: none;
+        }
+        .chapter-content { font-size: 1.05rem; line-height: 2; letter-spacing: 0.03em; }
+        .chapter-content p { text-indent: 2em; margin-bottom: 1.3em; }
+        .divider-ornament { text-align: center; margin: 32px 0; color: var(--divider); font-size: 1.2rem; }
+
+        .bottom-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 42px; padding-top: 22px; border-top: 1px dashed var(--divider);
+            gap: 16px; flex-wrap: wrap;
+        }
+        .bottom-nav .btn { font-size: 0.9rem; padding: 9px 20px; border-radius: 26px; }
+        .bottom-nav .btn:disabled { opacity: 0.35; pointer-events: none; }
+        .page-info { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+
+        .back-to-top {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--accent); color: #fff; border: none;
+            cursor: pointer; font-size: 1.3rem; opacity: 0;
+            pointer-events: none; transition: all 0.3s; z-index: 150;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        .back-to-top.visible { opacity: 1; pointer-events: auto; }
+        .back-to-top:hover { background: var(--accent-light); transform: translateY(-3px); }
+
+        .reading-progress {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: var(--accent); z-index: 999; transition: width 0.12s linear;
+        }
+
+        .hidden { display: none !important; }
+
+        /* 滚动条美化 */
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        body::-webkit-scrollbar { width: 7px; }
+        body::-webkit-scrollbar-track { background: var(--bg); }
+        body::-webkit-scrollbar-thumb { background: var(--divider); border-radius: 10px; }
+
+        /* 手机端响应式 */
+        @media (max-width: 800px) {
+            .top-bar { padding: 8px 14px; }
+            .top-bar .brand { font-size: 1.1rem; }
+            .menu-toggle {
+                display: flex !important;
+                order: -1;
+                margin-right: 10px;
+            }
+            .font-size-label { min-width: 32px; }
+
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100vh;
+                width: 270px;
+                min-width: 270px;
+                z-index: 220;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+                transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                border-right: 2px solid var(--border);
+            }
+            .sidebar.open { left: 0; }
+
+            .sidebar-overlay { display: block; }
+
+            .main-container { flex-direction: column; }
+
+            .content-area {
+                padding: 24px 16px;
+                max-width: 100%;
+                box-shadow: none;
+            }
+            .chapter-title { font-size: 1.6rem; }
+            .bottom-nav .btn { font-size: 0.85rem; padding: 8px 16px; }
+
+            .home-book-cover { width: 70%; max-width: 260px; }
+            .home-book-cover .cover-title { font-size: 2rem; }
+            .home-btn { padding: 12px 28px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reading-progress" id="readingProgress"></div>
+
+    <!-- 封面页 -->
+    <div id="homePage" class="home-container">
+        <div class="home-book-cover">
+            <span class="cover-sparkle"></span>
+            <span class="cover-sparkle"></span>
+            <span class="cover-sparkle"></span>
+            <div class="cover-icon">📖</div>
+            <div class="cover-title">诱饵入局</div>
+            <div class="cover-author">都市言情 · 全集</div>
+            <div class="cover-press">精心布局 · 步步沦陷</div>
+        </div>
+        <p class="home-intro">
+            <strong>人心为饵，布局为局。</strong><br>
+            他假意温柔，利用单纯少女步步入局；<br>
+            她懵懂深陷，沦为豪门争斗的一枚棋子。<br>
+            <span class="divider-dot">· · ·</span>
+            螳螂捕蝉，黄雀在后，<br>
+            谁才是真正被困在局中的人？
+        </p>
+        <div class="home-buttons">
+            <button class="home-btn primary" id="startReadingBtn">📖 开始阅读</button>
+            <button class="home-btn secondary" id="jumpToSequelBtn">📜 章节目录</button>
+        </div>
+    </div>
+
+    <!-- 阅读器视图 -->
+    <div id="readerContainer" class="hidden">
+        <header class="top-bar" id="topBar">
+            <button class="btn icon-btn menu-toggle" id="menuToggle" title="目录">☰</button>
+            <div class="brand" id="goHomeBtn" title="返回封面">📖 诱饵入局<span>· 都市言情全集</span></div>
+            <div class="top-bar-actions">
+                <div class="font-size-group">
+                    <button class="btn" id="fontSizeDown" title="缩小字体">A⁻</button>
+                    <span class="font-size-label" id="fontSizeLabel">标准</span>
+                    <button class="btn" id="fontSizeUp" title="放大字体">A⁺</button>
+                </div>
+                <button class="btn icon-btn" id="themeToggle" title="切换深色/浅色">🌙</button>
+            </div>
+        </header>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <div class="main-container">
+            <nav class="sidebar" id="sidebar">
+                <div class="sidebar-section-title">📜 正文全集</div>
+                <ul class="chapter-list" id="chapterListMain"></ul>
+            </nav>
+
+            <main class="content-area" id="contentArea">
+                <div style="text-align:center;margin-bottom:4px;">
+                    <span class="chapter-badge" id="chapterBadge">📖 正文 · 全集</span>
+                </div>
+                <h1 class="chapter-title" id="chapterTitle"></h1>
+                <p class="chapterSubtitle" id="chapterSubtitle"></p>
+                <div class="chapter-content" id="chapterContent"></div>
+                <div class="divider-ornament">— ✦ ✧ ✦ —</div>
+                <div class="bottom-nav">
+                    <button class="btn" id="prevChapterBtn">◀ 上一章</button>
+                    <span class="page-info" id="pageInfo"></span>
+                    <button class="btn" id="nextChapterBtn">下一章 ▶</button>
+                </div>
+            </main>
+        </div>
+        <button class="back-to-top" id="backToTop" title="回到顶部">↑</button>
+    </div>
+
+    <script>
+        (function() {
+            // 小说章节数据 - 《诱饵入局》
+            const mainChapters = [{
+                id: 1, part: '正文', title: "第一章", subtitle: "温柔假面，精心引诱",
+                content: `<p>顾淮谨推开顾晚萍的房门时，手里端着一杯温热的牛奶，那是她从小习惯喝的睡前饮品。</p>
+<p>房间里暖黄色的灯光洒在他身上，那副金丝眼镜反射出柔和的光晕，让他看起来温润如玉。自从一个月前，张万山签下那份断绝父女关系的协议，将晚萍“卖”给顾家后，顾淮谨就成了她在这个世界上唯一的依靠。</p>
+<p>“晚萍，还没睡？”顾淮谨走进房间，声音轻柔得像是在哄孩子。</p>
+<p>顾晚萍缩在被子里，有些局促地点点头。虽然顾砚舟和沈知微对她极好，给她买最好的衣服，请最好的老师，但她始终觉得自己像是一个闯入者，一个随时会被丢弃的玩偶。</p>
+<p>“喝点牛奶，助眠。”顾淮谨在她床边坐下，将杯子递过去，目光落在她微微颤抖的手指上，眼底闪过一丝不易察觉的嘲讽。</p>
+<p>真是个没见过世面的乡下丫头。</p>
+<p>但他嘴上却满是心疼：“晚萍，我知道你在这里过得不开心。爸……顾董今天又在饭桌上针对你，是哥哥没护好你。”</p>
+<p>顾晚萍咬着嘴唇，眼眶泛红。她根本不知道顾砚舟那句“晚萍还小，不懂事”是在试探，只当是自己真的惹人生厌。</p>
+<p>顾淮谨见火候差不多了，顺势握住她的手，语气带着几分脆弱：“其实，我也很难。你知道的，我不是爸妈亲生的，在这个家里，我只有你这一个妹妹了。如果连你也……”</p>
+<p>他叹了口气，从西装内袋里掏出一个陈旧的蝴蝶发卡——那是晚萍小时候在地摊上买的，早已褪色。</p>
+<p>“你看，我还留着这个。哥是真的把你当亲妹妹。”</p>
+<p>晚萍的防线彻底崩塌，眼泪夺眶而出：“哥，我没有不理你！”</p>
+<p>“那就好。”顾淮谨擦掉她脸上的泪，顺势说道，“晚萍，哥最近在争取一个项目，如果能做成，哥就能在顾家有立足之地，也能更好地保护你。但是……有个章子在爸的书房里，我不好去拿。你能帮帮哥吗？就这一次。”</p>
+<p>他顿了顿，压低声音：“只是拿一份普通的工程文件，没人会在意的。”</p>
+<p>晚萍看着他祈求的眼神，脑海中浮现出自己被亲爹卖掉的那天。那时只有这个“哥哥”在角落里偷偷抹眼泪。</p>
+<p>“好……我帮你。”</p>
+<p>顾淮谨笑了，那是猎人看到猎物踏入陷阱的笑容。</p>`
+            }, {
+                id: 2, part: '正文', title: "第二章", subtitle: "深夜潜入，误入局中",
+                content: `<p>深夜两点，整栋顾宅静悄悄的。</p>
+<p>顾晚萍赤脚踩在冰凉的大理石地板上，心脏跳得快要蹦出嗓子眼。她穿着一身黑色的运动服，这是顾淮谨特意给她准备的，说是“不容易被发现”。</p>
+<p>她像一个小偷一样溜进顾砚舟的书房。</p>
+<p>书房里弥漫着雪茄和皮革混合的味道，那是属于顾砚舟的气息，威严而令人窒息。晚萍不敢开灯，借着窗外透进来的月光，她摸索着打开了书桌的抽屉。</p>
+<p>第一个，空的。</p>
+<p>第二个，只有一些普通的文具。</p>
+<p>第三个……锁住了。</p>
+<p>晚萍急得手心冒汗。就在这时，门外传来了脚步声。</p>
+<p>“咔哒。”</p>
+<p>是门锁转动的声音。</p>
+<p>晚萍吓得魂飞魄散，慌乱中钻进了宽大的书桌底下，蜷缩成一团。</p>
+<p>门开了，走廊的灯光斜射进来。她透过桌腿的缝隙，看见一双锃亮的皮鞋走了进来，紧接着是沈知微那标志性的温柔嗓音。</p>
+<p>“砚舟，还没睡？”</p>
+<p>“嗯，在看这份城东地块的合同。”顾砚舟的声音沉稳有力，“那小子最近动作不小，你盯紧点。”</p>
+<p>“放心吧，跑不掉。”沈知微轻笑一声，随手拿起桌上的钢笔，“这钢笔该换了，上次晚萍说喜欢这支的笔帽，我都给她买了新的，这支就扔了吧。”</p>
+<p>“随你。”</p>
+<p>两人在书房里低声交谈了几句，随后关灯离开。</p>
+<p>直到脚步声彻底消失，晚萍才敢大口喘气。刚才那一刻，她甚至觉得自己下一秒就要被拖出去枪毙了。</p>
+<p>她颤抖着手，再次拉开那个锁住的抽屉。里面果然放着一份标着“绝密·城东开发案”的文件。</p>
+<p>她不敢细看内容，直接抽了出来，塞进怀里，然后像幽灵一样逃离了书房。</p>
+<p>回到房间时，顾淮谨竟然还没睡，正靠在床头看书。</p>
+<p>“拿到了？”他合上书，眼神灼热。</p>
+<p>晚萍点点头，颤抖着把文件递过去。</p>
+<p>顾淮谨抚摸着文件封皮，像是抚摸着稀世珍宝，嘴角勾起一抹势在必得的弧度：“做得好，晚萍。从明天起，没人能欺负你了。”</p>`
+            }, {
+                id: 3, part: '正文', title: "第三章", subtitle: "假意放权，暗中布局",
+                content: `<p>第二天清晨，阳光明媚。</p>
+<p>顾淮谨神清气爽地走进餐厅，对着正在用餐的顾砚舟和沈知微打招呼：“爸，妈，早。”</p>
+<p>顾砚舟抬起眼皮，淡淡地“嗯”了一声，目光扫过他手中的平板电脑——屏幕上似乎正是那份“城东开发案”的数据分析。</p>
+<p>沈知微温柔地盛了一碗粥，递给坐在对面的顾晚萍：“晚萍，昨晚睡得好吗？脸色怎么不太好。”</p>
+<p>晚萍猛地一僵，差点打翻勺子：“没……没事，可能有点紧张。”</p>
+<p>她不敢看顾砚舟的眼睛，总觉得那双深邃的眸子里藏着洞察一切的锐利。</p>
+<p>“年轻人嘛，偶尔熬夜也没事。”顾淮谨自然地接过话茬，给晚萍夹了一个虾饺，“晚萍最近在学东西，挺用功的。”</p>
+<p>顾砚舟慢条斯理地擦了擦嘴，忽然开口：“淮谨，城东那个项目，你最近是不是在忙？”</p>
+<p>顾淮谨心中一凛，面上却不动声色：“是的，爸。我想趁着年轻多历练历练。”</p>
+<p>“不错。”顾砚舟点了点头，没有任何责备的意思，“不过那个项目牵扯到海外资金，很复杂，你一个人搞不定。下周一把资料交上来，我让法务部帮你审一审。”</p>
+<p>“好……好的。”顾淮谨心中狂喜，以为顾砚舟是在放权给他。</p>
+<p>与此同时，位于别墅地下一层的安保室内。</p>
+<p>安保队长恭敬地站在两台显示器前。左边的屏幕显示着昨晚书房门口的画面——那是顾晚萍钻进桌底的惊恐瞬间。右边的屏幕则是顾淮谨卧室的实时监控。</p>
+<p>沈知微坐在真皮椅上，手里端着咖啡，冷冷地看着屏幕。</p>
+<p>“他用了晚萍，却连晚萍都保护不好。”沈知微笑得优雅，“砚舟，你说，我们要不要帮帮这个‘儿子’？”</p>
+<p>顾砚舟站在阴影里，点燃一支雪茄，烟雾缭绕中，他的眼神冰冷如霜：“不用。既然他想玩，就陪他玩到底。把海外那边的资金缺口数据调出来，让他在坑里跳得再欢一点。”</p>
+<p>“明白。”</p>`
+            }, {
+                id: 4, part: '正文', title: "第四章", subtitle: "贪念渐起，步步深陷",
+                content: `<p>几天后，顾淮谨的胆子越来越大。</p>
+<p>“晚萍，哥这边需要一份爸的行程表。”顾淮谨在沙发上搂着晚萍，语气亲昵，“下周三，爸要去参加一个酒会，我想提前准备一下。”</p>
+<p>晚萍这次犹豫了。</p>
+<p>那天早上，沈知微拉着她的手，语重心长地说：“晚萍，你是女孩子，长大了要学会保护自己。有些男人，嘴上说把你当宝贝，其实把你当傻子。你记住，无论谁让你做违背良心的事，哪怕是……你哥，你也要来找妈妈。”</p>
+<p>那句话像一根刺，扎在她心里。</p>
+<p>“哥，这样做……会不会不太好？”晚萍弱弱地问，“爸好像很看重隐私。”</p>
+<p>顾淮谨眉头微蹙，随即松开，捏了捏她的脸：“傻丫头，我们是兄妹，互相帮忙有什么不好的？还是说……你怕我？”</p>
+<p>“不是的！”晚萍急忙否认。</p>
+<p>“那就好。”顾淮谨眼神一暗，“晚萍，你别忘了，当初是谁把你接进顾家的。如果没有我，你现在还在那个暴发户家里挨打呢。”</p>
+<p>又是这句话。</p>
+<p>晚萍的心沉了下去。她想起沈知微说的“防人之心不可无”，想起顾砚舟那双看透一切的眼睛。</p>
+<p>她机械地拿出手机，拍下了顾砚舟放在客厅茶几上的日程本。</p>
+<p>当晚，当顾淮谨拿到照片时，顾砚舟正坐在书房里，看着手下传来的情报，嘴角勾起一抹冷笑。</p>
+<p>“他开始碰行程表了。”顾砚舟敲了敲桌面，“通知下去，周三的酒会，改地点，邀请函作废。另外，伪造一份假的行程表，放到晚萍能拍到的地方。”</p>
+<p>“是。”</p>`
+            }, {
+                id: 5, part: '正文', title: "第五章", subtitle: "局破梦碎，尘埃落定",
+                content: `<p>一个月后，顾淮谨觉得自己已经掌握了顾家的命脉。</p>
+<p>通过晚萍，他拿到了顾砚舟的私人印章（仿制品）、行程表、甚至是几份合同的复印件。他自信满满地找到了一家海外投资公司，准备签署一份足以掏空顾家资产的阴阳合同。</p>
+<p>签约前一天晚上，顾淮谨喝得微醺，回到了顾家别墅。</p>
+<p>客厅里灯火通明，顾砚舟和沈知微正坐在沙发上喝茶，气氛祥和得诡异。</p>
+<p>“爸，妈。”顾淮谨打了个招呼，语气中带着前所未有的得意，“明天我要出一趟远门，去谈个大项目。”</p>
+<p>“哦？去哪？”沈知微放下茶杯，笑容温柔。</p>
+<p>“国外。”顾淮谨意有所指地看了一眼躲在楼梯拐角处的顾晚萍，“这个项目很大，可能需要……全家移民。晚萍，你也收拾一下行李。”</p>
+<p>晚萍脸色惨白，她不知道顾淮谨要带她去哪里，但直觉告诉她，那一定是个深渊。</p>
+<p>“淮谨，过来坐。”顾砚舟招了招手，指了指面前的茶几。</p>
+<p>茶几上放着一台笔记本电脑，屏幕亮着，正在循环播放视频。</p>
+<p>第一段视频：晚萍深夜潜入书房。</p>
+<p>第二段视频：顾淮谨在卧室里狞笑的画面。</p>
+<p>第三段视频：顾淮谨与海外投资商密谋的录音。</p>
+<p>顾淮谨的酒瞬间醒了，冷汗浸透了后背。</p>
+<p>“爸……这是……”他试图狡辩。</p>
+<p>“够了。”顾砚舟站起身，居高临下地看着他，那眼神像是在看一只跳梁小丑，“顾淮谨，从你第一天想利用晚萍开始，你就已经输了。</p>
+<p>沈知微走到晚萍身边，紧紧抱住瑟瑟发抖的女孩，冷冷地盯着顾淮谨：“我们沈家，最恨的就是吃里扒外、利用亲情的畜生。”</p>
+<p>顾淮谨瘫坐在地上，看着那个曾经对他言听计从的“妹妹”，此刻正躲在沈知微身后，用看垃圾一样的眼神看着他。</p>
+<p>“不……不可能……你们什么时候……”他嘶吼着。</p>
+<p>“从你让她去偷第一份文件开始。”顾砚舟冷笑，“那晚的监控，画质很清晰。”</p>
+<p>顾淮谨绝望地闭上眼睛。</p>
+<p>他知道，他的豪门梦，碎了。</p>`
+            }];
+
+            const allChapters = [...mainChapters];
+
+            // DOM元素
+            const homePage = document.getElementById('homePage');
+            const readerContainer = document.getElementById('readerContainer');
+            const startBtn = document.getElementById('startReadingBtn');
+            const jumpSequelBtn = document.getElementById('jumpToSequelBtn');
+            const goHomeBtn = document.getElementById('goHomeBtn');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const chapterListMain = document.getElementById('chapterListMain');
+            const chapterListSequel = document.getElementById('chapterListSequel');
+            const chapterTitle = document.getElementById('chapterTitle');
+            const chapterSubtitle = document.getElementById('chapterSubtitle');
+            const chapterContent = document.getElementById('chapterContent');
+            const chapterBadge = document.getElementById('chapterBadge');
+            const prevBtn = document.getElementById('prevChapterBtn');
+            const nextBtn = document.getElementById('nextChapterBtn');
+            const pageInfo = document.getElementById('pageInfo');
+            const backToTopBtn = document.getElementById('backToTop');
+            const themeToggle = document.getElementById('themeToggle');
+            const fontSizeUp = document.getElementById('fontSizeUp');
+            const fontSizeDown = document.getElementById('fontSizeDown');
+            const fontSizeLabel = document.getElementById('fontSizeLabel');
+            const readingProgress = document.getElementById('readingProgress');
+
+            let currentChapterIndex = 0;
+            let fontSizeLevel = 2;
+            const fontSizeValues = ['0.9rem', '1rem', '1.05rem', '1.2rem', '1.4rem'];
+            const fontSizeLabels = ['特小', '较小', '标准', '较大', '特大'];
+
+            // 侧边栏控制
+            function openSidebar() {
+                sidebar.classList.add('open');
+                sidebarOverlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+            function toggleSidebar() {
+                sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+            }
+
+            // 构建目录
+            function buildChapterLists() {
+                chapterListMain.innerHTML = '';
+                if(chapterListSequel) chapterListSequel.innerHTML = '';
+                allChapters.forEach((ch, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="ch-num">${ch.id}</span> ${ch.title}`;
+                    if (ch.comingSoon) {
+                        li.classList.add('coming-soon');
+                        li.title = '内容即将更新';
+                        li.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            alert('章节正在创作中，敬请期待！');
+                        });
+                    } else {
+                        li.addEventListener('click', () => {
+                            navigateToChapter(index);
+                            if (window.innerWidth <= 800) closeSidebar();
+                        });
+                    }
+                    if (index === currentChapterIndex) li.classList.add('active');
+                    chapterListMain.appendChild(li);
+                });
+            }
+
+            function updateHighlight() {
+                const allItems = [...chapterListMain.querySelectorAll('li')];
+                allItems.forEach((li, i) => li.classList.toggle('active', i === currentChapterIndex));
+            }
+
+            // 加载章节
+            function loadChapter(index) {
+                if (index < 0 || index >= allChapters.length) return;
+                if (allChapters[index].comingSoon) {
+                    alert('该章节内容即将更新，敬请期待！');
+                    return;
+                }
+                currentChapterIndex = index;
+                const ch = allChapters[index];
+                chapterTitle.textContent = ch.title;
+                chapterSubtitle.textContent = ch.subtitle;
+                chapterContent.innerHTML = ch.content;
+                chapterContent.style.fontSize = fontSizeValues[fontSizeLevel];
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = index >= allChapters.length - 1;
+                pageInfo.textContent = `${index + 1} / ${allChapters.length}`;
+                updateHighlight();
+                localStorage.setItem('youer_juju_current_chapter', index);
+                window.location.hash = `chapter-${ch.id}`;
+            }
+
+            function navigateToChapter(index) { loadChapter(index); }
+
+            // 视图切换
+            function showReader(startIndex = 0) {
+                homePage.classList.add('hidden');
+                readerContainer.classList.remove('hidden');
+                buildChapterLists();
+                const saved = parseInt(localStorage.getItem('youer_juju_current_chapter'));
+                const target = startIndex || (saved >= 0 ? saved : 0);
+                loadChapter(target);
+                closeSidebar();
+            }
+
+            function showHome() {
+                readerContainer.classList.add('hidden');
+                homePage.classList.remove('hidden');
+                window.scrollTo({ top: 0 });
+                closeSidebar();
+            }
+
+            function jumpToSequel() {
+                showReader(0);
+            }
+
+            // 字体大小
+            function changeFont(delta) {
+                fontSizeLevel = Math.max(0, Math.min(4, fontSizeLevel + delta));
+                chapterContent.style.fontSize = fontSizeValues[fontSizeLevel];
+                fontSizeLabel.textContent = fontSizeLabels[fontSizeLevel];
+                localStorage.setItem('youer_juju_font_size', fontSizeLevel);
+            }
+
+            // 主题切换
+            function toggleTheme() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                if (isDark) {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeToggle.textContent = '🌙';
+                    localStorage.setItem('youer_juju_theme', 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.textContent = '☀️';
+                    localStorage.setItem('youer_juju_theme', 'dark');
+                }
+            }
+
+            // 回到顶部按钮显示隐藏
+            function toggleBackToTop() {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+            }
+
+            // 阅读进度条
+            function updateReadingProgress() {
+                const scrollTop = window.scrollY;
+                const docHeight = document.body.scrollHeight - window.innerHeight;
+                const percent = (scrollTop / docHeight) * 100;
+                readingProgress.style.width = percent + '%';
+            }
+
+            // 初始化读取本地配置
+            function initLocalSetting() {
+                const savedTheme = localStorage.getItem('youer_juju_theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.textContent = '☀️';
+                }
+                const savedFont = localStorage.getItem('youer_juju_font_size');
+                if (savedFont !== null) {
+                    fontSizeLevel = parseInt(savedFont);
+                    fontSizeLabel.textContent = fontSizeLabels[fontSizeLevel];
+                }
+            }
+
+            // 事件绑定
+            function bindEvent() {
+                startBtn.addEventListener('click', () => showReader(0));
+                jumpSequelBtn.addEventListener('click', jumpToSequel);
+                goHomeBtn.addEventListener('click', showHome);
+                menuToggle.addEventListener('click', toggleSidebar);
+                sidebarOverlay.addEventListener('click', closeSidebar);
+
+                prevBtn.addEventListener('click', () => loadChapter(currentChapterIndex - 1));
+                nextBtn.addEventListener('click', () => loadChapter(currentChapterIndex + 1));
+
+                backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+                themeToggle.addEventListener('click', toggleTheme);
+                fontSizeUp.addEventListener('click', () => changeFont(1));
+                fontSizeDown.addEventListener('click', () => changeFont(-1));
+
+                window.addEventListener('scroll', () => {
+                    toggleBackToTop();
+                    updateReadingProgress();
+                });
+
+                sidebarOverlay.addEventListener('touchmove', e => e.preventDefault());
+            }
+
+            // 页面初始化
+            function init() {
+                initLocalSetting();
+                bindEvent();
+                toggleBackToTop();
+            }
+            init();
+        })();
+    </script>
+</body>
+</html>
