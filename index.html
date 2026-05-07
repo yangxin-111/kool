@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>访问验证</title>
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f0f2f5;">
+    <div style="background:#fff;padding:30px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);width:90%;max-width:300px;text-align:center;">
+        <h2 style="margin:0 0 20px 0;">🔒 请输入密码</h2>
+        <input type="password" id="pwd" placeholder="密码" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:20px;font-size:16px;">
+        <button onclick="check()" style="width:100%;padding:12px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;">确认</button>
+        <p id="tip" style="color:red;margin-top:15px;display:none;">密码错误</p>
+    </div>
+
+    <script>
+        // 密码改成你想用的
+        const pass = "1";
+        function check() {
+            let input = document.getElementById("pwd").value;
+            if (input === pass) {
+                // 自动获取你的 Netlify 域名，拼上 book.html 路径，绝对不会 404
+                window.location.href = window.location.origin + "/book.html";
+            } else {
+                document.getElementById("tip").style.display = "block";
+                document.getElementById("pwd").value = "";
+            }
+        }
+        // 回车登录
+        document.getElementById("pwd").addEventListener("keydown", e => e.key === "Enter" && check());
+    </script>
+</body>
+</html>
