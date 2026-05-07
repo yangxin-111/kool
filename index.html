@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>访问验证</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0f4ff, #d9e2ff);
+        }
+
+        .box {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .box h2 {
+            font-size: 22px;
+            color: #1e293b;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .input-item {
+            margin-bottom: 18px;
+        }
+
+        .input-item input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+            background: #fafbfc;
+        }
+
+        .input-item input:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .link span {
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        #tip {
+            color: #dc2626;
+            margin-top: 18px;
+            font-size: 14px;
+            display: none;
+        }
+
+        #success {
+            color: #16a34a;
+            margin-top: 18px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录 -->
+    <div class="box" id="loginBox">
+        <h2>🔒 登录</h2>
+        <div class="input-item">
+            <input type="text" id="loginUser" placeholder="用户名">
+        </div>
+        <div class="input-item">
+            <input type="password" id="loginPwd" placeholder="密码">
+        </div>
+        <button class="btn" onclick="login()">登录</button>
+        <p class="link">没有账号？<span onclick="showReg()">去注册</span></p>
+        <p id="tip">用户名或密码错误</p>
+    </div>
+
+    <!-- 注册 -->
+    <div class="box" id="regBox" style="display: none;">
+        <h2>📝 注册</h2>
+        <div class="input-item">
+            <input type="text" id="regUser" placeholder="设置用户名">
+        </div>
+        <div class="input-item">
+            <input type="password" id="regPwd" placeholder="设置密码">
+        </div>
+        <button class="btn" onclick="register()">注册</button>
+        <p class="link">已有账号？<span onclick="showLogin()">返回登录</span></p>
+        <p id="success">注册成功！请登录</p>
+    </div>
+
+    <script>
+        // 切换面板
+        function showReg() {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('regBox').style.display = 'block';
+            document.getElementById('tip').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+        }
+        function showLogin() {
+            document.getElementById('regBox').style.display = 'none';
+            document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('tip').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+        }
+
+        // 注册
+        function register() {
+            let user = document.getElementById('regUser').value.trim();
+            let pwd = document.getElementById('regPwd').value.trim();
+
+            if (!user || !pwd) {
+                document.getElementById('success').style.display = 'none';
+                document.getElementById('tip').innerText = '用户名和密码不能为空';
+                document.getElementById('tip').style.display = 'block';
+                return;
+            }
+
+            // 本地保存账号
+            localStorage.setItem('username', user);
+            localStorage.setItem('password', pwd);
+
+            document.getElementById('tip').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+
+            setTimeout(() => {
+                showLogin();
+            }, 1000);
+        }
+
+        // 登录 → 成功直接跳小说页
+        function login() {
+            let inputUser = document.getElementById('loginUser').value.trim();
+            let inputPwd = document.getElementById('loginPwd').value.trim();
+
+            let user = localStorage.getItem('username');
+            let pwd = localStorage.getItem('password');
+
+            if (inputUser === user && inputPwd === pwd) {
+                // ✅ 登录成功，跳转到小说阅读页
+                window.location.href = "book.html";
+            } else {
+                document.getElementById('tip').style.display = 'block';
+                document.getElementById('loginUser').value = '';
+                document.getElementById('loginPwd').value = '';
+            }
+        }
+
+        // 回车快捷操作
+        document.getElementById('loginPwd').addEventListener('keydown', e => e.key === 'Enter' && login());
+        document.getElementById('regPwd').addEventListener('keydown', e => e.key === 'Enter' && register());
+    </script>
+</body>
+</html>
